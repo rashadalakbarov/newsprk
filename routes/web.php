@@ -10,13 +10,21 @@ use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\admin\DashboardController;
 
 
-// frontrend
+// frontend
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
 
 // admin
 Route::prefix('admin')->name('admin.')->group(function(){
-    Route::get('/index', [AuthController::class, 'index'])->name('index');
+    Route::group(['middleware' => 'admin.guest'], function(){
+        Route::get('/index', [AuthController::class, 'index'])->name('index');
+        Route::post('/index', [AuthController::class, 'login'])->name('index.post');
+    });
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::group(['middleware' => 'admin.auth'], function(){
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+        Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    });
 });
