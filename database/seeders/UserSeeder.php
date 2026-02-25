@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             'name' => 'Rashad Alakbarov',
             'username' => 'alakbarovre',
             'email' => 'admin@newsprk.com',
-            'role' => 'a20',
+            'status' => 'a20',
             'password' => Hash::make('qasimov24123'),
         ]);
     }

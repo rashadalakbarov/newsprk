@@ -8,6 +8,8 @@ use App\Http\Controllers\HomeController;
 // admin
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\RolesController;
+use App\Http\Controllers\admin\PermissionsController;
 
 
 // frontend
@@ -25,6 +27,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+        Route::prefix('users')->name('users.')->group(function(){
+            Route::get('/roles', [RolesController::class, 'index'])->name('roles');
+            Route::get('/permissions', [PermissionsController::class, 'index'])->name('permissions');
+        });        
     });
 });

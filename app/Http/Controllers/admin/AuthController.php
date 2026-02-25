@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         if($validator->passes()){
             if(Auth::guard('admin')->attempt(['username' => $request->username, 'password' => $request->password])){
-                if(Auth::guard('admin')->user()->role != 'a20'){
+                if(Auth::guard('admin')->user()->status != 'a20'){
                     Auth::guard('admin')->logout();
                     return redirect()->route('index')->with('error', 'You are not authorized to access this page');
                 }

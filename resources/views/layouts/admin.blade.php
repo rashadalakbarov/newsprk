@@ -11,6 +11,8 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('/admin/') }}/assets/images/favicon.ico">
 
+    @yield('css')
+
     <!-- Layout config Js -->
     <script src="{{ asset('/admin/') }}/assets/js/layout.js"></script>
     <!-- Bootstrap Css -->
@@ -110,6 +112,9 @@
     <script src="{{ asset('/admin/') }}/assets/libs/feather-icons/feather.min.js"></script>
     <script src="{{ asset('/admin/') }}/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="{{ asset('/admin/') }}/assets/js/plugins.js"></script>
+
+    <!-- App js -->
+    @yield('js')
 
     <!-- App js -->
     <script src="{{ asset('/admin/') }}/assets/js/app.js"></script>
