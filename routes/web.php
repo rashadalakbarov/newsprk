@@ -29,6 +29,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
 
         Route::prefix('users')->name('users.')->group(function(){
             Route::get('/roles', [RolesController::class, 'index'])->name('roles');
+            Route::post('/roles/store', [RolesController::class, 'store'])->name('roles.store');
             Route::get('/permissions', [PermissionsController::class, 'index'])->name('permissions');
         });        
     });

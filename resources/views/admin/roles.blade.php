@@ -2,10 +2,6 @@
 
 @section('title', 'Admin Roles')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('/admin/') }}/assets/libs/gridjs/theme/mermaid.min.css">
-@endsection
-
 @section('content')
     <div class="row">
         <div class="col-lg-12">
@@ -20,7 +16,33 @@
                 </div>
 
                 <div class="card-body">
-                    <div id="table-roles"></div>
+                    <table class="table table-nowrap">
+                        @if ($roles->count() > 0)
+                            <thead>
+                                <tr>
+                                    <th scope="col">Role Name</th>
+                                    <th scope="col">Created</th>
+                                    <th scope="col">Updated</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($roles as $role)
+                                    <tr>
+                                        <th scope="row">{{ $role->name }}</th>
+                                        <td>{{ $role->created_at }}</td>
+                                        <td>{{ $role->updated_at }}</td>
+                                        <td><a href="javascript:void(0);" class="link-success">View More <i
+                                                    class="ri-arrow-right-line align-middle"></i></a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        @else
+                            <div class="alert alert-secondary border-0 shadow mb-xl-0" role="alert">
+                                <strong> İnfo notification! </strong> There is no data in the role field.
+                            </div>
+                        @endif
+                    </table>
                 </div>
             </div>
         </div>
@@ -35,12 +57,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="javascript:void(0);">
+                    <form id="createdRoleForm" method="POST">
+                        @csrf
                         <div class="row g-3">
                             <div class="col-12">
                                 <div>
                                     <label for="role_name" class="form-label">Role Name</label>
-                                    <input type="text" class="form-control" id="role_name" placeholder="Enter Role Name">
+                                    <input type="text" class="form-control @error('role_name') is-invalid @enderror"
+                                        id="role_name" placeholder="Enter Role Name" name="role_name"
+                                        value="{{ old('role_name') }}">
+                                    @error('role_name')
+                                        <p class="invalid-feedback">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -49,8 +77,8 @@
                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
-                            </div><!--end col-->
-                        </div><!--end row-->
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -59,41 +87,50 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('/admin/') }}/assets/libs/gridjs/gridjs.umd.js"></script>
-    <script src="{{ asset('/admin/') }}/assets/js/pages/gridjs.init.js"></script>
-
     <script>
-        document.getElementById("table-roles") &&
-            new gridjs.Grid({
-                columns: [{
-                        name: "Name",
-                        width: "150px"
+        $(document).ready(function() {
+            $('#createdRoleForm').on('submit', function(e) {
+                e.preventDefault();
+
+                $('#role_name').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('admin.users.roles.store') }}",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Your role has been saved",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        setTimeout(function() {
+                            location.reload();
+                        }, 2000);
                     },
-                    {
-                        name: "Created",
-                        width: "250px"
-                    },
-                    {
-                        name: "Updated",
-                        width: "250px"
-                    },
-                    {
-                        name: "Action",
-                        width: "150px"
-                    },
-                ],
-                pagination: {
-                    limit: 5
-                },
-                search: !0,
-                data: [
-                    [
-                        "Jonathan",
-                        "jonathan@example.com",
-                        "Senior Implementation Architect",
-                        "Holy See",
-                    ],
-                ],
-            }).render(document.getElementById("table-roles"))
+                    error: function(xhr) {
+
+                        if (xhr.status === 422) {
+
+                            let errors = xhr.responseJSON.errors;
+
+                            if (errors.role_name) {
+                                $('#role_name').addClass('is-invalid');
+
+                                $('#role_name').after(
+                                    '<div class="invalid-feedback">' +
+                                    errors.role_name[0] +
+                                    '</div>'
+                                );
+                            }
+                        }
+                    }
+                });
+            });
+        });
     </script>
 @endsection

@@ -106,6 +106,7 @@
     </div>
 
     <!-- JAVASCRIPT -->
+    <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
     <script src="{{ asset('/admin/') }}/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('/admin/') }}/assets/libs/simplebar/simplebar.min.js"></script>
     <script src="{{ asset('/admin/') }}/assets/libs/node-waves/waves.min.js"></script>
@@ -118,6 +119,7 @@
 
     <!-- App js -->
     <script src="{{ asset('/admin/') }}/assets/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
