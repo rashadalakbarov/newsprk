@@ -121,6 +121,12 @@
                                     data-key="t-admins-permissions">
                                     Admin permissions </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.users.rolepermissions') }}"
+                                    class="nav-link text-capitalize {{ request()->routeIs('admin.users.rolepermissions') ? 'active' : '' }}"
+                                    data-key="t-admins-roles-permissions">
+                                    Role Permissions </a>
+                            </li>
                         </ul>
                     </div>
                 </li>

@@ -10,6 +10,7 @@ use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\RolesController;
 use App\Http\Controllers\admin\PermissionsController;
+use App\Http\Controllers\admin\RolePermissionController;
 
 
 // frontend
@@ -34,6 +35,12 @@ Route::prefix('admin')->name('admin.')->group(function(){
             Route::post('/roles/delete/{id}', [RolesController::class, 'delete'])->name('roles.delete');
 
             Route::get('/permissions', [PermissionsController::class, 'index'])->name('permissions');
+            Route::post('/permissions/store', [PermissionsController::class, 'store'])->name('permissions.store');
+            Route::post('/permissions/update/{id}', [PermissionsController::class, 'update'])->name('permissions.update');
+            Route::post('/permissions/delete/{id}', [PermissionsController::class, 'delete'])->name('permissions.delete');
+
+            Route::get('/role-permissions', [RolePermissionController::class, 'index'])->name('rolepermissions');
+            Route::post('/role-permissions/store', [RolePermissionController::class, 'store'])->name('rolepermissions.store');
         });        
     });
 });

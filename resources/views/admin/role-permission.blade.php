@@ -1,51 +1,58 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin Roles')
+@section('title', 'Role Permission')
 
 @section('content')
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title mb-0">All Admin Roles</h4>
+                    <h4 class="card-title mb-0">All Role Permissions</h4>
                     <!-- Grids in modals -->
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
-                        Create Role
+                        Create Role Permission
                     </button>
 
                 </div>
 
                 <div class="card-body">
                     <table class="table table-nowrap">
-                        @if ($roles->count() > 0)
+                        @if ($role_permissions->count() > 0)
                             <thead>
                                 <tr>
                                     <th scope="col">Role Name</th>
+                                    <th scope="col">Role Permission</th>
                                     <th scope="col">Created</th>
                                     <th scope="col">Updated</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($roles as $role)
+                                @foreach ($role_permissions as $role_permission)
                                     <tr>
-                                        <td>{{ $role->name }}</td>
-                                        <td>{{ $role->created_at }}</td>
-                                        <td>{{ $role->updated_at }}</td>
+                                        <td>{{ $role_permission->name }}</td>
                                         <td>
-                                            <a href="" class="text-primary fs-4 me-2 editRoleBtn" title="edit"
-                                                data-bs-toggle="modal" data-bs-target="#updateModal"
-                                                data-id="{{ $role->id }}" data-name="{{ $role->name }}"><i
+                                            @foreach ($role_permission->permissions as $perm)
+                                                <span class="badge bg-primary">{{ $perm->label }}</span>
+                                            @endforeach
+                                        </td>
+                                        <td>{{ $role_permission->created_at }}</td>
+                                        <td>{{ $role_permission->updated_at }}</td>
+                                        <td>
+                                            <a href="" class="text-primary fs-4 me-2 editPermissionBtn"
+                                                title="edit" data-bs-toggle="modal" data-bs-target="#updateModal"
+                                                data-id="{{ $role_permission->id }}"
+                                                data-name="{{ $role_permission->name }}"><i
                                                     class="mdi mdi-lead-pencil"></i></a>
-                                            <a href="" class="text-danger fs-4 deleteRoleBtn" title="trash"
-                                                data-id="{{ $role->id }}"><i class="mdi mdi-trash-can"></i></a>
+                                            <a href="" class="text-danger fs-4 deletePermissionBtn" title="trash"
+                                                data-id="{{ $role_permission->id }}"><i class="mdi mdi-trash-can"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         @else
                             <div class="alert alert-secondary border-0 shadow mb-xl-0" role="alert">
-                                <strong> İnfo notification! </strong> There is no data in the role field.
+                                <strong> İnfo notification! </strong> There is no data in the permission field.
                             </div>
                         @endif
                     </table>
@@ -59,22 +66,40 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createModalLabel">Add Role</h5>
+                    <h5 class="modal-title" id="createModalLabel">Role Permission</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="createdRoleForm" method="POST">
+                    <form id="createdRolePermissionForm" method="POST">
                         @csrf
                         <div class="row g-3">
                             <div class="col-12">
+                                <label for="role_select" class="form-label">Roles</label>
+                                <select class="form-select @error('role_select') is-invalid @enderror" id="role_select"
+                                    name="role_select">
+                                    <option selected="">Select your role </option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('role_select')
+                                    <p class="invalid-feedback">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="col-12">
                                 <div>
-                                    <label for="role_name" class="form-label">Role Name</label>
-                                    <input type="text" class="form-control @error('role_name') is-invalid @enderror"
-                                        id="role_name" placeholder="Enter Role Name" name="role_name"
-                                        value="{{ old('role_name') }}">
-                                    @error('role_name')
-                                        <p class="invalid-feedback">{{ $message }}</p>
-                                    @enderror
+                                    <label for="all_permissions" class="form-label">Permissions</label>
+                                    @foreach ($permissions as $permission)
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                class="form-check-input @error('permission_checkbox') is-invalid @enderror"
+                                                id="{{ $permission->id }}" name="permission_checkbox[]"
+                                                value="{{ $permission->id }}">
+                                            <label for="{{ $permission->id }}"
+                                                class="form-check-label">{{ $permission->label }}</label>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
 
@@ -96,20 +121,21 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Update Role</h5>
+                    <h5 class="modal-title" id="updateModalLabel">Update Permission</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="updatedRoleForm" method="POST">
+                    <form id="updatedPermissionForm" method="POST">
                         @csrf
                         <div class="row g-3">
                             <div class="col-12">
                                 <div>
-                                    <label for="edit_role_name" class="form-label">Role Name</label>
-                                    <input type="text" class="form-control @error('edit_role_name') is-invalid @enderror"
-                                        id="edit_role_name" placeholder="Enter Role Name" name="edit_role_name"
-                                        value="{{ old('edit_role_name') }}">
-                                    @error('edit_role_name')
+                                    <label for="edit_permission_name" class="form-label">Permission Name</label>
+                                    <input type="text"
+                                        class="form-control @error('edit_permission_name') is-invalid @enderror"
+                                        id="edit_permission_name" placeholder="Enter Permission Name"
+                                        name="edit_permission_name" value="{{ old('edit_permission_name') }}">
+                                    @error('edit_permission_name')
                                         <p class="invalid-feedback">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -134,22 +160,23 @@
 @section('js')
     <script>
         $(document).ready(function() {
-            $('#createdRoleForm').on('submit', function(e) {
+            $('#createdRolePermissionForm').on('submit', function(e) {
                 e.preventDefault();
 
-                $('#role_name').removeClass('is-invalid');
+                $('#role_select').removeClass('is-invalid');
+                $('input[name="permission_checkbox[]"]').removeClass('is-invalid');
                 $('.invalid-feedback').remove();
 
                 $.ajax({
                     type: "POST",
-                    url: "{{ route('admin.users.roles.store') }}",
+                    url: "{{ route('admin.users.rolepermissions.store') }}",
                     data: $(this).serialize(),
                     success: function(response) {
                         $('#createModal').modal('hide');
                         Swal.fire({
                             position: "top-end",
                             icon: "success",
-                            title: "Your role has been saved",
+                            title: "Your permission has been saved",
                             showConfirmButton: false,
                             timer: 1500
                         });
@@ -159,17 +186,29 @@
                         }, 2000);
                     },
                     error: function(xhr) {
-
                         if (xhr.status === 422) {
 
                             let errors = xhr.responseJSON.errors;
 
-                            if (errors.role_name) {
-                                $('#role_name').addClass('is-invalid');
+                            // Role validation
+                            if (errors.role_select) {
+                                $('#role_select').addClass('is-invalid');
 
-                                $('#role_name').after(
+                                $('#role_select').after(
                                     '<div class="invalid-feedback">' +
-                                    errors.role_name[0] +
+                                    errors.role_select[0] +
+                                    '</div>'
+                                );
+                            }
+
+                            // Permission validation
+                            if (errors.permission_checkbox) {
+
+                                $('input[name="permission_checkbox[]"]').addClass('is-invalid');
+
+                                $('input[name="permission_checkbox[]"]:last').parent().after(
+                                    '<div class="invalid-feedback d-block">' +
+                                    errors.permission_checkbox[0] +
                                     '</div>'
                                 );
                             }
@@ -178,26 +217,26 @@
                 });
             });
 
-            $('.editRoleBtn').on('click', function() {
+            $('.editPermissionBtn').on('click', function() {
                 let id = $(this).data('id');
                 let name = $(this).data('name');
 
-                $('#edit_role_name').val(name);
+                $('#edit_permission_name').val(name);
                 $('#edit_role_id').val(id);
             });
 
-            $('#updatedRoleForm').on('submit', function(e) {
+            $('#updatedPermissionForm').on('submit', function(e) {
                 e.preventDefault();
 
                 let roleId = $('#edit_role_id').val();
                 let formData = $(this).serialize();
 
-                $('#edit_role_name').removeClass('is-invalid');
+                $('#edit_permission_name').removeClass('is-invalid');
                 $('.invalid-feedback').remove();
 
                 $.ajax({
                     type: "POST",
-                    url: "/admin/users/roles/update/" + roleId,
+                    url: "/admin/users/permissions/update/" + roleId,
                     data: formData,
                     success: function(response) {
                         $('#updateModal').modal('hide');
@@ -219,12 +258,12 @@
 
                             let errors = xhr.responseJSON.errors;
 
-                            if (errors.edit_role_name) {
-                                $('#edit_role_name').addClass('is-invalid');
+                            if (errors.edit_permission_name) {
+                                $('#edit_permission_name').addClass('is-invalid');
 
-                                $('#edit_role_name').after(
+                                $('#edit_permission_name').after(
                                     '<div class="invalid-feedback">' +
-                                    errors.edit_role_name[0] +
+                                    errors.edit_permission_name[0] +
                                     '</div>'
                                 );
                             }
@@ -233,7 +272,7 @@
                 });
             });
 
-            $('.deleteRoleBtn').on('click', function(e) {
+            $('.deletePermissionBtn').on('click', function(e) {
                 e.preventDefault();
 
                 let roleId = $(this).data('id');
@@ -251,7 +290,7 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "POST",
-                            url: "/admin/users/roles/delete/" + roleId,
+                            url: "/admin/users/permissions/delete/" + roleId,
                             headers: {
                                 'X-CSRF-TOKEN': token
                             },
