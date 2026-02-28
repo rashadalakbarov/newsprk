@@ -35,4 +35,34 @@ class RolesController extends Controller
             ], 422);
         }
     }
+
+    public function update(Request $request, string $id){
+        $validator = Validator::make($request->all(), [
+            'edit_role_name' => 'required|regex:/^[A-Za-z\s]+$/|min:3',
+        ]);
+
+        if($validator->passes()){
+            $roles= Role::findOrFail($id);
+            $roles->name = $request->edit_role_name;
+            $roles->save();
+
+            return response()->json([
+                'success' => true
+            ]);
+        } else {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+    }
+
+    public function delete(string $id){
+
+        $roles= Role::findOrFail($id);
+        $roles->delete();
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
 }

@@ -30,6 +30,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::prefix('users')->name('users.')->group(function(){
             Route::get('/roles', [RolesController::class, 'index'])->name('roles');
             Route::post('/roles/store', [RolesController::class, 'store'])->name('roles.store');
+            Route::post('/roles/update/{id}', [RolesController::class, 'update'])->name('roles.update');
+            Route::post('/roles/delete/{id}', [RolesController::class, 'delete'])->name('roles.delete');
+
             Route::get('/permissions', [PermissionsController::class, 'index'])->name('permissions');
         });        
     });

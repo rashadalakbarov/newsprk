@@ -8,6 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
+
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('/admin/') }}/assets/images/favicon.ico">
 
@@ -23,6 +27,13 @@
     <link href="{{ asset('/admin/') }}/assets/css/app.min.css" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{ asset('/admin/') }}/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        td,
+        th {
+            vertical-align: middle;
+        }
+    </style>
 </head>
 
 <body>
