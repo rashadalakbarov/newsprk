@@ -40,7 +40,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
             Route::post('/permissions/delete/{id}', [PermissionsController::class, 'delete'])->name('permissions.delete');
 
             Route::get('/role-permissions', [RolePermissionController::class, 'index'])->name('rolepermissions');
-            Route::post('/role-permissions/store', [RolePermissionController::class, 'store'])->name('rolepermissions.store');
+            Route::post('/role-permissions/store', [RolePermissionController::class, 'store'])->name('rolepermissions.store');            
+            Route::get('/role-permissions/get/{id}', [RolePermissionController::class, 'getPermission'])->name('rolepermissions.get');
+            Route::post('/role-permissions/update/{id}', [RolePermissionController::class, 'update'])->name('rolepermissions.update');
+            Route::post('/role-permissions/delete/{id}', [RolePermissionController::class, 'delete'])->name('rolepermissions.delete');
         });        
     });
 });

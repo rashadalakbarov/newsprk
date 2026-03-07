@@ -39,13 +39,13 @@
                                         <td>{{ $role_permission->created_at }}</td>
                                         <td>{{ $role_permission->updated_at }}</td>
                                         <td>
-                                            <a href="" class="text-primary fs-4 me-2 editPermissionBtn"
+                                            <a href="" class="text-primary fs-4 me-2 editRolePermissionBtn"
                                                 title="edit" data-bs-toggle="modal" data-bs-target="#updateModal"
-                                                data-id="{{ $role_permission->id }}"
-                                                data-name="{{ $role_permission->name }}"><i
-                                                    class="mdi mdi-lead-pencil"></i></a>
-                                            <a href="" class="text-danger fs-4 deletePermissionBtn" title="trash"
-                                                data-id="{{ $role_permission->id }}"><i class="mdi mdi-trash-can"></i></a>
+                                                data-id="{{ $role_permission->id }}"><i class="mdi mdi-lead-pencil"></i></a>
+
+                                            <a href="" class="text-danger fs-4 deleteRolePermissionBtn"
+                                                title="trash" data-id="{{ $role_permission->id }}"><i
+                                                    class="mdi mdi-trash-can"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -66,7 +66,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createModalLabel">Role Permission</h5>
+                    <h5 class="modal-title" id="createModalLabel">Create Role Permission</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -121,32 +121,35 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Update Permission</h5>
+                    <h5 class="modal-title" id="updateModalLabel">Update Role Permission</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="updatedPermissionForm" method="POST">
+                    <form id="updatedRolePermissionForm" method="POST">
                         @csrf
                         <div class="row g-3">
                             <div class="col-12">
                                 <div>
-                                    <label for="edit_permission_name" class="form-label">Permission Name</label>
-                                    <input type="text"
-                                        class="form-control @error('edit_permission_name') is-invalid @enderror"
-                                        id="edit_permission_name" placeholder="Enter Permission Name"
-                                        name="edit_permission_name" value="{{ old('edit_permission_name') }}">
-                                    @error('edit_permission_name')
-                                        <p class="invalid-feedback">{{ $message }}</p>
-                                    @enderror
+                                    <label for="all_permissions" class="form-label">Permissions</label>
+                                    @foreach ($permissions as $permission)
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                class="form-check-input @error('permission_checkbox') is-invalid @enderror"
+                                                id="update_{{ $permission->id }}" name="permission_checkbox[]"
+                                                value="{{ $permission->id }}">
+                                            <label for="{{ $permission->id }}"
+                                                class="form-check-label">{{ $permission->label }}</label>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
 
-                            <input type="hidden" id="edit_role_id" name="edit_role_id">
+                            <input hidden="hidden" name="edit_role_id" id="edit_role_id" />
 
                             <div class="col-12">
                                 <div class="hstack gap-2 justify-content-end">
                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
                             </div>
                         </div>
@@ -217,15 +220,30 @@
                 });
             });
 
-            $('.editPermissionBtn').on('click', function() {
-                let id = $(this).data('id');
-                let name = $(this).data('name');
+            $('.editRolePermissionBtn').on('click', function(e) {
+                e.preventDefault();
 
-                $('#edit_permission_name').val(name);
-                $('#edit_role_id').val(id);
+                let roleId = $(this).data('id');
+
+                $('#edit_role_id').val(roleId);
+
+                // önce tüm checkboxları temizle
+                $('#updatedRolePermissionForm input[type="checkbox"]').prop('checked', false);
+
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/users/role-permissions/get/" + roleId,
+                    success: function(response) {
+
+                        response.permissions.forEach(function(permId) {
+                            $('#update_' + permId).prop('checked', true);
+                        });
+
+                    }
+                });
             });
 
-            $('#updatedPermissionForm').on('submit', function(e) {
+            $('#updatedRolePermissionForm').on('submit', function(e) {
                 e.preventDefault();
 
                 let roleId = $('#edit_role_id').val();
@@ -236,7 +254,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/admin/users/permissions/update/" + roleId,
+                    url: "/admin/users/role-permissions/update/" + roleId,
                     data: formData,
                     success: function(response) {
                         $('#updateModal').modal('hide');
@@ -272,7 +290,7 @@
                 });
             });
 
-            $('.deletePermissionBtn').on('click', function(e) {
+            $('.deleteRolePermissionBtn').on('click', function(e) {
                 e.preventDefault();
 
                 let roleId = $(this).data('id');
@@ -290,7 +308,7 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "POST",
-                            url: "/admin/users/permissions/delete/" + roleId,
+                            url: "/admin/users/role-permissions/delete/" + roleId,
                             headers: {
                                 'X-CSRF-TOKEN': token
                             },

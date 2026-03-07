@@ -37,4 +37,37 @@ class RolePermissionController extends Controller
             'message' => 'Role permissions saved successfully'
         ]);
     }
+
+    public function getPermission($id){
+        $roles = Role::findOrFail($id);
+
+        return response()->json([
+            'permissions' => $roles->permissions->pluck('id')
+        ]);
+    }
+
+    public function update(Request $request, $id) {
+        $role = Role::findOrFail($id);
+
+        $permissions = $request->permission_checkbox ?? [];
+
+        $role->permissions()->sync($permissions);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Role permissions updated successfully'
+        ]);
+    }
+
+    public function delete($id){
+        $role = Role::findOrFail($id);
+
+        // bütün permissionları kaldır
+        $role->permissions()->detach();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Role permissions deleted successfully'
+        ]);
+    }
 }
